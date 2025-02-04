@@ -1,0 +1,60 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="maui_project.MainPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="10">
+
+            <Entry x:Name="Keyword" Placeholder="Search Keywords" WidthRequest="200" />
+            <Entry x:Name="Duration" Placeholder="Search Period (Days):" WidthRequest="200" />
+            <Grid Margin="10">
+                <Border Padding="10">
+                    <Grid>
+                        <!-- Grid의 열 정의 -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <!-- 비율로 공간 분배 -->
+                            <RowDefinition Height="*"/>
+                            <!-- 남은 공간 차지 -->
+                        </Grid.RowDefinitions>
+                        <Button Text="Open in Browser" Clicked="OnOpenBrowserClicked"  WidthRequest="200" Grid.Row="0"/>
+                        <Button x:Name="Download" Text="DownLoad" Clicked="OnDownloadClicked"  WidthRequest="200" Grid.Row="1" IsVisible="False"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Label x:Name="StatusLabel" Text="Status: Waiting..." TextColor="Gray" />
+
+            <Grid ColumnDefinitions="100, 100, 100, 100, 100, 100" Padding="10" BackgroundColor="LightGray" WidthRequest="800">
+                <Label Text="공고명" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                <Label Text="검색어" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="1"/>
+                <Label Text="공고기관" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="2"/>
+                <Label Text="수요기관" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="3"/>
+                <Label Text="게시일자" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="4"/>
+                <Label Text="검색일자" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="5"/>
+            </Grid>
+            <ListView x:Name="dataListView"
+                  HasUnevenRows="True"
+                  SeparatorVisibility="Default"
+                  SeparatorColor="Gray"
+                  VerticalOptions="FillAndExpand"
+                  HeightRequest="300"
+                  WidthRequest="800">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Orientation="Horizontal" Padding="10">
+                                <Label Text="{Binding not_name}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding search_keyword}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding not_org}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding need_org}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding not_date}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding search_date}" WidthRequest="100" HorizontalTextAlignment="Center"/>
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
