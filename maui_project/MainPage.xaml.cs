@@ -1,10 +1,10 @@
-﻿using System;
-using System.Data;
+﻿using System.Data;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using System.Windows;
 using System.Collections.ObjectModel;
 using OfficeOpenXml;
+using CommunityToolkit.Maui.Storage;
+using System.IO;
 
 namespace maui_project;
 
@@ -26,32 +26,35 @@ public partial class MainPage : ContentPage
         InitializeComponent();
     }
 
+
     private async void OnOpenBrowserClicked(object sender, EventArgs e)
     {
-        string url = "https://www.g2b.go.kr/";
-        string query = Keyword.Text;
-        DateTime today = DateTime.Now;
-        int target_duration = Convert.ToInt32(Duration.Text);
+        // 로딩창.
+        LoadingPanel.IsVisible = true;
 
-        if (string.IsNullOrWhiteSpace(query))
-        {
-            StatusLabel.Text = "Status: Please enter a valid key word.";
-            StatusLabel.TextColor = Colors.Red;
-            return;
-        }
+        string start_date = startdatePicker.Date.ToString("yyyyMMdd");
+        string end_date = enddatePicker.Date.ToString("yyyyMMdd");
+        string query = Keyword.Text;
+
+        StatusLabel.Text = "Status: Launching browser...";
+        StatusLabel.TextColor = Colors.Gray;
+
+        string url = "https://www.g2b.go.kr/";
+        DateTime today = DateTime.Now;
+
+        // Launch Selenium with ChromeDriver
+        ChromeOptions options = new ChromeOptions();
+        options.AddArgument("--disable-gpu"); // GPU 사용 비활성화
+        options.AddArgument("--no-sandbox"); // 샌드박스 모드 해제
+        options.AddArgument("--headless"); // 브라우저 창을 시각화하지 않음
+
+        ChromeDriverService service = ChromeDriverService.CreateDefaultService();
+        service.HideCommandPromptWindow = true; // ChromeDriver 실행 시 콘솔 창 숨기기
+        service.SuppressInitialDiagnosticInformation = true; // 초기 로깅 정보 숨기기
 
         try
         {
-            StatusLabel.Text = "Status: Launching browser...";
-            StatusLabel.TextColor = Colors.Gray;
-
-            // Launch Selenium with ChromeDriver
-            ChromeOptions options = new ChromeOptions();
-            options.AddArgument("--disable-gpu"); // GPU 사용 비활성화
-            options.AddArgument("--no-sandbox"); // 샌드박스 모드 해제
-            options.AddArgument("--headless"); // 브라우저 창을 시각화하지 않음
-
-            using (IWebDriver driver = new ChromeDriver(options))
+            using (IWebDriver driver = new ChromeDriver(service, options))
             {
                 driver.Navigate().GoToUrl(url);
                 await Task.Delay(3000); // Wait for 3 seconds
@@ -71,15 +74,20 @@ public partial class MainPage : ContentPage
 
                 // 검색어 입력
                 TmpElement = driver.FindElement(By.CssSelector("#mf_wfm_container_tacBidPbancLst_contents_tab2_body_bidPbancNm"));
-                TmpElement.SendKeys(query);
+                if (query != null)
+                    TmpElement.SendKeys(query);
 
                 // 기간 지정
                 TmpElement = driver.FindElement(By.CssSelector("#mf_wfm_container_tacBidPbancLst_contents_tab2_body_grpShbox"));
-                string start_date = DateTime.Today.AddDays(-target_duration).ToString("yyyyMMdd");
                 TmpElement = TmpElement.FindElement(By.CssSelector("[id*='ibxStrDay']"));
                 TmpElement.Clear();
                 TmpElement.SendKeys(start_date);
-                
+
+                TmpElement = driver.FindElement(By.CssSelector("#mf_wfm_container_tacBidPbancLst_contents_tab2_body_grpShbox"));
+                TmpElement = TmpElement.FindElement(By.CssSelector("[id*='ibxEndDay']"));
+                TmpElement.Clear();
+                TmpElement.SendKeys(end_date);
+
                 // 검색 실행
                 TmpElement = driver.FindElement(By.CssSelector("#mf_wfm_container_tacBidPbancLst_contents_tab2_body_btnS0004"));
                 TmpElement.Click();
@@ -103,13 +111,15 @@ public partial class MainPage : ContentPage
                     string not_org = list[7];
                     string need_org = list[8];
                     string not_date = list[9];
-                    string search_date = today.ToString("yyyy/mm/dd");
+                    string search_date = today.ToString("yyyy/MM/dd");
 
                     datatable.Rows.Add(not_name, search_keyword, not_org, need_org, not_date, search_date);
                 }
 
                 Entities = new ObservableCollection<Entity>();
+
                 // 결과를 표시
+                int cnt = 0;
                 foreach (DataRow row in datatable.Rows)
                 {
                     Entities.Add(new Entity
@@ -121,36 +131,47 @@ public partial class MainPage : ContentPage
                         not_date = row[4].ToString(),
                         search_date = row[5].ToString()
                     });
+                    cnt++;
                 }
 
                 // ListView에 데이터 바인딩
                 dataListView.ItemsSource = Entities;
 
-                // 다운로드 버튼 시각화
-                Download.IsVisible = true;
+                // 상태 표시
+                StatusLabel.Text = $"Status: Successfully opened.\n" 
+                    + cnt + "개의 결과";
+                StatusLabel.TextColor = Colors.Green;
 
-                // 크롬드라이버 종료
-                driver.Quit();
+                // 다운로드버튼 활성화
+                DownloadLayer.IsVisible = true;
+
+                // 차트 활성화
+                Chart.IsVisible = true;
             }
-
-            StatusLabel.Text = $"Status: Successfully opened {url}.";
-            StatusLabel.TextColor = Colors.Green;
         }
         catch (Exception ex)
         {
-            StatusLabel.Text = $"Status: Error - {ex.Message}";
+            StatusLabel.Text = $"Status: Open failed.";
             StatusLabel.TextColor = Colors.Red;
+            return;
         }
-        
+        finally
+        {
+            // 로딩창.
+            LoadingPanel.IsVisible = false;
+        }
     }
 
     private async void OnDownloadClicked(object sender, EventArgs e)
     {
+        var stream = new MemoryStream(); // 메모리 스트림 생성
+
         try
         {
             // EPPlus 라이브러리에서 ExcelPackage 사용
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial; // 비상업적 사용 선언
-            using (var package = new ExcelPackage())
+            
+            using (var package = new ExcelPackage(stream))
             {
                 // 워크시트 추가
                 var worksheet = package.Workbook.Worksheets.Add("Sheet1");
@@ -170,18 +191,42 @@ public partial class MainPage : ContentPage
                     }
                 }
 
-                string filePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + "\\장표.xlsx";
-
-                // 파일 저장
-                File.WriteAllBytes(filePath, package.GetAsByteArray());
-
-                await Application.Current.MainPage.DisplayAlert("다운로드 성공", "다운로드에 성공하였습니다.", "OK");
+                package.Save(); // 스트림에 데이터 저장
             }
         }
         catch (Exception ex)
         {
-            await Application.Current.MainPage.DisplayAlert("다운로드 실패", "다운로드에 실패하였습니다.", "OK");
+            await DisplayAlert("다운로드 실패", "다운로드에 실패하였습니다.", "OK");
+            return;
         }
+
+        stream.Position = 0;
+
+        // 파일 저장
+        using var cts = new CancellationTokenSource(); // CancellationTokenSource 생성
+        CancellationToken cancellationToken = cts.Token;
+
+        var fileSaveResult = await FileSaver.Default.SaveAsync("장표.xlsx", stream, cancellationToken);
+
+        if (fileSaveResult.IsSuccessful)
+        {
+            await DisplayAlert("파일 저장", $"파일이 저장됨: {fileSaveResult.FilePath}", "확인");
+        }
+        else
+        {
+            await DisplayAlert("다운로드 실패", "다운로드에 실패하였습니다.", "OK");
+        }
+    }
+
+    private async void OnResetClicked(object sender, EventArgs e)
+    {
+        datatable.Clear();
+        dataListView.ItemsSource = null;
+        DownloadLayer.IsVisible = false;
+        Chart.IsVisible = false;
+
+        StatusLabel.Text = "Status: Waiting...";
+        StatusLabel.TextColor = Colors.Gray;
     }
 
     public class Entity

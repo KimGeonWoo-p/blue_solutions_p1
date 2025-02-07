@@ -3,58 +3,180 @@
              x:Class="maui_project.MainPage">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="10">
+        <Grid>
+            <!-- 메인 컨텐츠 -->
+            <VerticalStackLayout x:Name="MainView" Padding="20" Spacing="10">
 
-            <Entry x:Name="Keyword" Placeholder="Search Keywords" WidthRequest="200" />
-            <Entry x:Name="Duration" Placeholder="Search Period (Days):" WidthRequest="200" />
-            <Grid Margin="10">
-                <Border Padding="10">
-                    <Grid>
-                        <!-- Grid의 열 정의 -->
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="2*"/>
-                            <!-- 비율로 공간 분배 -->
-                            <RowDefinition Height="*"/>
-                            <!-- 남은 공간 차지 -->
-                        </Grid.RowDefinitions>
-                        <Button Text="Open in Browser" Clicked="OnOpenBrowserClicked"  WidthRequest="200" Grid.Row="0"/>
-                        <Button x:Name="Download" Text="DownLoad" Clicked="OnDownloadClicked"  WidthRequest="200" Grid.Row="1" IsVisible="False"/>
+                <Grid ColumnDefinitions="2*, 2*, 2*, 6*, 2*" 
+                      RowDefinitions="*, *" Padding="10" 
+                      WidthRequest="700" HeightRequest="100">
+                    <Label Text="Start" 
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           Grid.Row="0" Grid.Column="0"/>
+                    <Label Text="End"
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           Grid.Row="0" Grid.Column="2"/>
+                    <DatePicker x:Name="startdatePicker"
+                               WidthRequest="100"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+                               Grid.Row="1" Grid.Column="0"/>
+                    <Label Text="~" 
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           Grid.Row="1" Grid.Column="1"/>
+                    <DatePicker x:Name="enddatePicker"
+                               WidthRequest="100"
+                               HorizontalOptions="Center" VerticalOptions="Center"
+               Grid.Row="1" Grid.Column="2"/>
+                    <Entry x:Name="Keyword" Placeholder="Search Keywords" WidthRequest="200"
+                           HorizontalOptions="Center" VerticalOptions="Center"
+                           HeightRequest="50" Grid.Row="1" Grid.Column="3"/>
+
+                    <Button Clicked="OnOpenBrowserClicked"
+                            ImageSource="search.jpg"
+                            BackgroundColor="White"
+                            HorizontalOptions="Center" VerticalOptions="Center"
+                            HeightRequest="50" Grid.Row="1" Grid.Column="4"/>
+                </Grid>
+
+                <Grid x:Name="DownloadLayer" Margin="10" IsVisible="False">
+                    <Border Padding="10">
+                        <Grid ColumnDefinitions="*, *">
+                            <Button x:Name="Download_BTN" Text="DownLoad" Clicked="OnDownloadClicked" 
+                                    HorizontalOptions="Center"
+                                    WidthRequest="200" Grid.Column="0"/>
+                            <Button x:Name="Reset_BTN" Text="Reset" Clicked="OnResetClicked"
+                                    HorizontalOptions="Center"
+                                    WidthRequest="200" Grid.Column="1"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+                <Label x:Name="StatusLabel" Text="Status: Waiting..." TextColor="Gray" />
+
+                <StackLayout x:Name="Chart" IsVisible="False" Spacing="0"  WidthRequest="900" HeightRequest="300">
+                    <!-- 헤더 -->
+                    <Grid ColumnDefinitions="*, *, *, *, *, *" BackgroundColor="LightGray">
+                        <Border Grid.Column="0"
+                                HorizontalOptions="Center">
+                            <Label Text="공고명" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
+                        <Border  Grid.Column="1"
+                                 HorizontalOptions="Center">
+                            <Label Text="검색어" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
+                        <Border Grid.Column="2"
+                                HorizontalOptions="Center">
+                            <Label Text="공고기관" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
+                        <Border Grid.Column="3"
+                                HorizontalOptions="Center">
+                            <Label Text="수요기관" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
+                        <Border Grid.Column="4"
+                                HorizontalOptions="Center">
+                            <Label Text="게시일자" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
+                        <Border Grid.Column="5"
+                                HorizontalOptions="Center">
+                            <Label Text="검색일자" FontAttributes="Bold" 
+                                   HorizontalTextAlignment="Center" WidthRequest="150"
+                                   Padding="0" Margin="0"/>
+                        </Border>
                     </Grid>
-                </Border>
-            </Grid>
-            <Label x:Name="StatusLabel" Text="Status: Waiting..." TextColor="Gray" />
+                    <ListView x:Name="dataListView"
+                              HasUnevenRows="True"
+                              SeparatorColor="Gray"
+                              VerticalOptions="FillAndExpand"
+                              SeparatorVisibility="None">
 
-            <Grid ColumnDefinitions="100, 100, 100, 100, 100, 100" Padding="10" BackgroundColor="LightGray" WidthRequest="800">
-                <Label Text="공고명" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
-                <Label Text="검색어" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="1"/>
-                <Label Text="공고기관" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="2"/>
-                <Label Text="수요기관" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="3"/>
-                <Label Text="게시일자" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="4"/>
-                <Label Text="검색일자" FontAttributes="Bold" HorizontalTextAlignment="Center" Grid.Column="5"/>
+                        <ListView.ItemTemplate Spacing="0" Margin="0">
+                            <DataTemplate>
+                                <ViewCell>
+                                    <StackLayout Orientation="Horizontal">
+                                        <!-- 내용 -->
+                                        <Grid ColumnDefinitions ="*,*,*,*,*,*"  ColumnSpacing="0" Margin="0" WidthRequest="900">
+                                            <Border Grid.Column="0">
+                                                <Label Text="{Binding not_name}"
+                                                       MaxLines="2" 
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                            <Border Grid.Column="1">
+                                                <Label Text="{Binding search_keyword}"
+                                                       MaxLines="2"
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                            <Border Grid.Column="2">
+                                                <Label Text="{Binding not_org}"
+                                                       MaxLines="2"
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                            <Border Grid.Column="3">
+                                                <Label Text="{Binding need_org}" 
+                                                       MaxLines="2"
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                            <Border Grid.Column="4">
+                                                <Label Text="{Binding not_date}" 
+                                                       MaxLines="2"
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                            <Border Grid.Column="5">
+                                                <Label Text="{Binding search_date}" 
+                                                       MaxLines="2"
+                                                       WidthRequest="150"
+                                                       Padding="0" Margin="0"
+                                                       LineBreakMode="TailTruncation"/>
+                                            </Border>
+                                        </Grid>
+                                    </StackLayout>
+                                </ViewCell>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
+            </VerticalStackLayout>
+
+            <!-- UI 차단 레이어 -->
+            <!-- 반투명한 로딩 오버레이 -->
+            <Grid x:Name="LoadingPanel"
+                  BackgroundColor="Black"
+                  Opacity="0.5"
+                  IsVisible="False"
+                  InputTransparent="False"> 
+
+                <!-- 반투명 배경 -->
+                <BoxView BackgroundColor="Black"
+                                            Opacity="0.5"
+                                            AbsoluteLayout.LayoutBounds="0,0,1,1"
+                                            AbsoluteLayout.LayoutFlags="All"/>
+
+                <!-- 로딩 애니메이션 + 텍스트 -->
+                <StackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="True"/>
+                    <Label Text="로딩 중..." TextColor="White" FontSize="18" />
+                </StackLayout>
+
             </Grid>
-            <ListView x:Name="dataListView"
-                  HasUnevenRows="True"
-                  SeparatorVisibility="Default"
-                  SeparatorColor="Gray"
-                  VerticalOptions="FillAndExpand"
-                  HeightRequest="300"
-                  WidthRequest="800">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <ViewCell>
-                            <StackLayout Orientation="Horizontal" Padding="10">
-                                <Label Text="{Binding not_name}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                                <Label Text="{Binding search_keyword}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                                <Label Text="{Binding not_org}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                                <Label Text="{Binding need_org}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                                <Label Text="{Binding not_date}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                                <Label Text="{Binding search_date}" WidthRequest="100" HorizontalTextAlignment="Center"/>
-                            </StackLayout>
-                        </ViewCell>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </VerticalStackLayout>
+        </Grid>
     </ScrollView>
 </ContentPage>
 

@@ -485,3 +485,8 @@ C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win
 C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Win32.SystemEvents.dll
 C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Drawing.Common.dll
 C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Security.Cryptography.Pkcs.dll
+C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\maui_project.sourcelink.json
+C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\search.scale-100.jpg
+C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\search.scale-100.jpg
+C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\CommunityToolkit.Maui.Core.dll
+C:\cs_project\maui_project\maui_project\bin\Debug\net9.0-windows10.0.19041.0\win10-x64\System.Speech.dll

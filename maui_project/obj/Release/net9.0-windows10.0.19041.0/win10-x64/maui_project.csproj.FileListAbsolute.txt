@@ -485,3 +485,8 @@ C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\w
 C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\Microsoft.Windows.Widgets.winmd
 C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\Microsoft.UI.pri
 C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\Microsoft.UI.Xaml.Controls.pri
+C:\cs_project\maui_project\maui_project\obj\Release\net9.0-windows10.0.19041.0\win10-x64\maui_project.sourcelink.json
+C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\search.scale-100.jpg
+C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\CommunityToolkit.Maui.Core.dll
+C:\cs_project\maui_project\maui_project\bin\Release\net9.0-windows10.0.19041.0\win10-x64\System.Speech.dll
+C:\cs_project\maui_project\maui_project\obj\Release\net9.0-windows10.0.19041.0\win10-x64\resizetizer\r\search.scale-100.jpg

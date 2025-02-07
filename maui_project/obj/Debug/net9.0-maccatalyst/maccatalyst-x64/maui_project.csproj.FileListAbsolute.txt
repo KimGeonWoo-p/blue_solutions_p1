@@ -312,3 +312,5 @@ C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst
 C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\maui_project.pdb
 C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\maui_project.genruntimeconfig.cache
 C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\ref\maui_project.dll
+C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\resizetizer\r\Resources\search.jpg
+C:\cs_project\maui_project\maui_project\obj\Debug\net9.0-maccatalyst\maccatalyst-x64\maui_project.sourcelink.json
